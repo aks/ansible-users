@@ -46,6 +46,9 @@ into your playbook.
 `users` role was written by:
 - Maciej Delmanowski | [e-mail](mailto:drybjed@gmail.com) | [Twitter](https://twitter.com/drybjed) | [GitHub](https://github.com/drybjed)
 
+Contributions from:
+- Alan Stebbens | [e-mail](mailto:aks@stebbens.org) | [Twitter](https://twitter.com/aks_sba) | [Github](https://github.com/aks)
+
 License: [GPLv3](https://tldrlegal.com/license/gnu-general-public-license-v3-%28gpl-3%29)
 
 ***

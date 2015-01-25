@@ -15,6 +15,20 @@
          (item.state is undefined or (item.state is defined and item.state != 'absent')) and
          (item.sshkeys is defined and item.sshkeys))
 
+- name: Configure authorized SSH keys for users from ssh keyfiles
+  authorized_key:
+    user: '{{ item.0.name }}'
+    key: "{{ lookup('file', users_keyfiles_dir +'/' + item.1) }}"
+    state: 'present'
+  with_subelements:
+    - users_list
+    - ssh_keyfiles
+  when: (users_keyfiles_dir is defined and users_keyfiles_dir and
+         item.1 is defined and item.1                         and
+         item.0.name is defined and item.0.name               and
+         item.0.state is defined and item.0.state != 'absent' and
+         item.0.ssh_keyfiles is defined and item.0.ssh_keyfiles)
+
 - name: Remove ~/.ssh/authorized_keys from user account if disabled
   file:
     path: '{{ item.home | default(users_default_home_prefix + "/" + item.name) }}/.ssh/authorized_keys'
@@ -26,6 +40,7 @@
     - users_group_list
     - users_host_list
   when: ((item.name is defined and item.name != 'root') and
-         (item.state is undefined or (item.state is defined and item.state != 'absent')) and
-         (item.sshkeys is defined and not item.sshkeys))
+         (item.state is undefined or item.state is defined and item.state != 'absent') and
+         ((item.sshkeys is defined and item.sshkeys == False) or
+          (item.ssh_keyfiles is not defined or item.ssh_keyfiles == [])))
 

@@ -38,6 +38,11 @@ ansigenome_info:
       email: 'drybjed@gmail.com'
       twitter: 'drybjed'
       github: 'drybjed'
+    - name: 'Alan Stebbens'
+      url: ''
+      email: 'aks@stebbens.org'
+      twitter: 'aks_sba'
+      github: 'aks'
 
   synopsis: |
     This role can be used to manage user accounts (and user groups). You can

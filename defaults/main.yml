@@ -29,6 +29,37 @@ users_group_list: []
 # "Host" users
 users_host_list: []
 
+# The path to the directory containing ssh keyfiles per user
+# The complete path to each ssh keyfile will be:
+#
+#   {{ users_keyfiles_dir }}/{{ keyfilename }}
+#
+# It's typical to have a sub-directory per user, and name the
+# keyfiles like this:
+#
+#  - name: bob
+#    state: present
+#    ssh_keyfiles:
+#      - bob/bob-id_rsa.pub
+#      - bob/aws-dev.pem
+#  - name: susan
+#    state: present
+#    ssh_keyfiles:
+#      - susan/id_rsa.pub
+#  - name: frank
+#    state: present
+#    ssh_keyfiles:
+#      - frank/id_dsa.pub
+#
+# Not every user needs to have the same number of ssh keys, nor
+# do they even need to have one.
+#
+# Note: each user *must* have an "ssh_keyfiles" attribute, unless you have
+# applied the
+# [ignore-missing-subelements](https://github.com/aks/ansible/tree/ignore-missing-subelements)
+# patch to ansible from github, and set the variable `ignore_missing_subelements = True`.
+#
+users_keyfiles_dir:
 
 # --- An example account entry, everything except 'name' is optional
 # List of all recognized values, default value listed first
@@ -60,9 +91,18 @@ users_host_list: []
 #    # Add or disable ssh authorized keys (set to False to remove ~/.ssh/authorized_keys
 #    sshkeys: [ 'list', 'of', 'keys' ]
 #
+#    # or, update authorized keys from the contents from named ssh keyfiles:
+#    ssh_keyfiles:
+#      - username/username-id_rsa.pub
+#      - dev/dev-id_dsa.pub
+#
 #    password: 'krypt pass'         # mkpasswd --method=SHA-512 oder cat /etc/shadow
 #    update_password: 'on_create'   # always will update passwords if they differ.
 #                                   # on_create will only set the password for newly created users. (added in Ansible 1.3)
+#
+# This variable must be defined in order for the `ssh_keyfiles` above to work.
+#
+#users_keyfiles_dir: path/to/your/ssh_keyfiles
 
 
 # --- Global defaults ---
