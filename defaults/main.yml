@@ -3,7 +3,6 @@
 # Should Ansible manage user accounts? Set to False to disable
 users: True
 
-
 # --- Lists of different accounts to create/manage ---
 
 # root user, if you want to change something on the root account
@@ -29,6 +28,12 @@ users_group_list: []
 # "Host" users
 users_host_list: []
 
+# Users keyfiles dir -- define the absolute or relative path to where
+# the user's keyfiles live.
+#
+# user_keyfiles_dir: "abs/or/relative/path/to/where/user/keyfiles/live"
+
+user_keyfiles_dir:
 
 # --- An example account entry, everything except 'name' is optional
 # List of all recognized values, default value listed first
@@ -49,7 +54,7 @@ users_host_list: []
 #    systemuser: False/True         # create system user
 #    systemgroup: False/True        # create system group
 #
-#    # optional: define hosts on which this users should be created
+#    # OPTIONAL: define hosts on which this users should be created
 #    hosts: [ host1, host2, ... ]   # limit this user to these hosts
 #
 #    dotfiles: False/True           # download and configure dotfiles?
@@ -63,7 +68,10 @@ users_host_list: []
 #    # Add or disable ssh authorized keys (set to False to remove ~/.ssh/authorized_keys
 #    sshkeys: [ 'list', 'of', 'keys' ]
 #
-#    # define one or more public key files to include into the ~/.ssh/authorized_keys file
+#    # OPTIONAL: define one or more public key files to include into the
+#    # ~/.ssh/authorized_keys file.  The files can be named with explicit paths
+#    # or, they can be relative to "{{user_keyfiles_dir}}/"
+#
 #    ssh_keyfiles: [ file1, file2, ... ]
 #
 #    password: 'krypt pass'         # mkpasswd --method=SHA-512 oder cat /etc/shadow
@@ -92,12 +100,12 @@ users_default_home_prefix: '/home'
 users_default_dotfiles: False
 
 # Default dotfile hash to use
-users_default_dotfiles_key: 'drybjed'
+users_default_dotfiles_key: 'aks'
 
 # List of dotfile hashes
 users_dotfiles:
-  drybjed:
-    repo: 'https://github.com/drybjed/dotfiles.git'
+  aks:
+    repo: 'https://github.com/aks/std-dotfiles.git'
     command: 'make install'
-    creates: '~/.zshrc'
+    creates: '~/.bashrc'
 
