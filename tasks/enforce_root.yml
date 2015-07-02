@@ -6,6 +6,7 @@
     gid: '0'
     system: True
     state: 'present'
+  tags: [ root_groups ]
 
 - name: Enforce root user account
   user:
@@ -21,6 +22,7 @@
   with_flattened:
     - users_root
   when: item.name is defined and item.name == 'root'
+  tags: [ root_user ]
 
 - name: Enforce root home permissions
   file:
@@ -29,4 +31,5 @@
     owner: 'root'
     group: 'root'
     mode: '0700'
+  tags: [ root_home ]
 

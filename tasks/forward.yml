@@ -17,6 +17,7 @@
          (item.state is undefined or (item.state is defined and item.state and item.state != 'absent')) and
          (item.forward is defined and item.forward) and
          (item.hosts is undefined or (item.hosts is defined and item.hosts and inventory_hostname in item.hosts)))
+  tags: [ user_forwards ]
 
 - name: Remove ~/.forward from user account when disabled
   file:
@@ -32,4 +33,5 @@
          (item.state is undefined or (item.state is defined and item.state and item.state != 'absent')) and
          (item.forward is defined and not item.forward) and
          (item.hosts is undefined or (item.hosts is defined and item.hosts and inventory_hostname in item.hosts)))
+  tags: [ user_forwards, remove ]
 

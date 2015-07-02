@@ -15,6 +15,7 @@
          (item.state is undefined or (item.state is defined and item.state != 'absent')) and
          (item.sshkeys is defined and item.sshkeys) and
          (item.hosts is undefined or (item.hosts is defined and item.hosts and inventory_hostname in item.hosts)))
+  tags: [ sshkeys ]
 
 - name: Remove ~/.ssh/authorized_keys from user account if disabled
   file:
@@ -30,4 +31,5 @@
          (item.state is undefined or (item.state is defined and item.state != 'absent')) and
          (item.sshkeys is defined and not item.sshkeys) and
          (item.hosts is undefined or (item.hosts is defined and item.hosts and inventory_hostname in item.hosts)))
+  tags: [ sshkeys , remove ]
 
