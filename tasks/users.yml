@@ -1,12 +1,12 @@
 ---
 
+# create groups, even those mentioned on the root user
 - name: Create user groups
   group:
     name:   '{{ item.group       | default(item.name) }}'
     system: '{{ item.systemgroup | default("no") }}'
     gid:    '{{ item.gid         | default(omit) }}'
     state:  'present'
-  tags: user_groups
   with_flattened:
     - users_default
     - users_admins
@@ -14,9 +14,12 @@
     - users_list
     - users_group_list
     - users_host_list
-  when: ((item.name is defined and item.name and item.name != 'root') and
+  when: ((item.name is defined and item.name) and
          (item.state is undefined or (item.state is defined and item.state and item.state != 'absent')) and
          (item.hosts is undefined or (item.hosts is defined and item.hosts and inventory_hostname in item.hosts)))
+  tags: [ user_groups ]
+
+# create user accounts, except for 'root' -- it has its own rules
 
 - name: Manage user accounts
   user:
@@ -31,7 +34,6 @@
     shell:           '{{ item.shell           | default(users_default_shell) }}'
     home:            '{{ item.home            | default(users_default_home_prefix + "/" + item.name) }}'
     createhome:      'yes'
-  tags: users
   with_flattened:
     - users_default
     - users_admins
@@ -42,6 +44,9 @@
   when: ((item.name is defined and item.name and item.name != 'root') and
          (item.state is undefined or (item.state is defined and item.state and item.state != 'absent')) and
          (item.hosts is undefined or (item.hosts is defined and item.hosts and inventory_hostname in item.hosts)))
+  tags: [ users ]
+
+# apply any default groups to all users (except root)
 
 - name: Manage user default groups
   user:
@@ -49,7 +54,6 @@
     state:  '{{ item.state                | default("present") }}'
     groups: '{{ users_default_groups_list | join(",") }}'
     append: '{{ users_default_groups_append) }}'
-  tags: user_groups
   with_flattened:
     - users_default
     - users_admins
@@ -61,6 +65,9 @@
          (item.state is undefined or (item.state is defined and item.state and item.state != 'absent')) and
          (users_default_groups_list is defined and users_default_groups_list) and
          (item.hosts is undefined or (item.hosts is defined and item.hosts and inventory_hostname in item.hosts)))
+  tags: [ user_groups ]
+
+# add users to their groups
 
 - name: Manage user groups
   user:
@@ -78,6 +85,7 @@
          (item.state is undefined or (item.state is defined and item.state and item.state != 'absent')) and
          (item.groups is defined and item.groups) and
          (item.hosts is undefined or (item.hosts is defined and item.hosts and inventory_hostname in item.hosts)))
+  tags: [ user_groups ]
 
 - name: Remove user groups if requested
   group:
@@ -93,4 +101,4 @@
   when: ((item.name is defined and item.name and item.name != 'root') and
          (item.state is defined and item.name and item.state == 'absent') and
          (item.hosts is undefined or (item.hosts is defined and item.hosts and inventory_hostname in item.hosts)))
-
+  tags: [ user_groups, remove ]
