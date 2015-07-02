@@ -2,10 +2,11 @@
 
 - name: Create user groups
   group:
-    name: '{{ item.group | default(item.name) }}'
+    name:   '{{ item.group       | default(item.name) }}'
     system: '{{ item.systemgroup | default("no") }}'
-    gid: '{{ item.gid | default(omit) }}'
-    state: 'present'
+    gid:    '{{ item.gid         | default(omit) }}'
+    state:  'present'
+  tags: user_groups
   with_flattened:
     - users_default
     - users_admins
@@ -13,51 +14,58 @@
     - users_list
     - users_group_list
     - users_host_list
-  when: ((item.name is defined and item.name != 'root') and
-         (item.state is undefined or (item.state is defined and item.state != 'absent')))
+  when: ((item.name is defined and item.name and item.name != 'root') and
+         (item.state is undefined or (item.state is defined and item.state and item.state != 'absent')) and
+         (item.hosts is undefined or (item.hosts is defined and item.hosts and inventory_hostname in item.hosts)))
 
 - name: Manage user accounts
   user:
-    name: '{{ item.name }}'
-    uid: '{{ item.uid | default(omit) }}'
-    group: '{{ item.group | default(item.name) }}'
-    state: '{{ item.state | default("present") }}'
-    comment: '{{ item.comment | default("") }}'
-    password: '{{ item.password | default("*") }}'
+    name:            '{{ item.name }}'
+    uid:             '{{ item.uid             | default(omit) }}'
+    group:           '{{ item.group           | default(item.name) }}'
+    state:           '{{ item.state           | default("present") }}'
+    comment:         '{{ item.comment         | default("") }}'
+    password:        '{{ item.password        | default("*") }}'
     update_password: '{{ item.update_password | default("on_create") }}'
-    system: '{{ item.systemuser | default("no") }}'
-    shell: '{{ item.shell | default(users_default_shell) }}'
-    home: '{{ item.home | default(users_default_home_prefix + "/" + item.name) }}'
-    createhome: 'yes'
+    system:          '{{ item.systemuser      | default("no") }}'
+    shell:           '{{ item.shell           | default(users_default_shell) }}'
+    home:            '{{ item.home            | default(users_default_home_prefix + "/" + item.name) }}'
+    createhome:      'yes'
+  tags: users
   with_flattened:
     - users_default
     - users_admins
     - users_list
+    - users_groups
     - users_group_list
     - users_host_list
-  when: ((item.name is defined and item.name != 'root') and
-         (item.state is undefined or (item.state is defined and item.state != 'absent')))
+  when: ((item.name is defined and item.name and item.name != 'root') and
+         (item.state is undefined or (item.state is defined and item.state and item.state != 'absent')) and
+         (item.hosts is undefined or (item.hosts is defined and item.hosts and inventory_hostname in item.hosts)))
 
 - name: Manage user default groups
   user:
-    name: '{{ item.name }}'
-    state: '{{ item.state | default("present") }}'
+    name:   '{{ item.name }}'
+    state:  '{{ item.state                | default("present") }}'
     groups: '{{ users_default_groups_list | join(",") }}'
     append: '{{ users_default_groups_append) }}'
+  tags: user_groups
   with_flattened:
     - users_default
     - users_admins
     - users_list
+    - users_groups
     - users_group_list
     - users_host_list
-  when: ((item.name is defined and item.name != 'root') and
-         (item.state is undefined or (item.state is defined and item.state != 'absent')) and
-         (users_default_groups_list is defined and users_default_groups_list))
+  when: ((item.name is defined and item.name and item.name != 'root') and
+         (item.state is undefined or (item.state is defined and item.state and item.state != 'absent')) and
+         (users_default_groups_list is defined and users_default_groups_list) and
+         (item.hosts is undefined or (item.hosts is defined and item.hosts and inventory_hostname in item.hosts)))
 
 - name: Manage user groups
   user:
-    name: '{{ item.name }}'
-    state: '{{ item.state | default("present") }}'
+    name:   '{{ item.name }}'
+    state:  '{{ item.state  | default("present") }}'
     groups: '{{ item.groups | join(",") }}'
     append: '{{ item.append | default("yes") }}'
   with_flattened:
@@ -67,8 +75,9 @@
     - users_group_list
     - users_host_list
   when: ((item.name is defined and item.name != 'root') and
-         (item.state is undefined or (item.state is defined and item.state != 'absent')) and
-         (item.groups is defined and item.groups))
+         (item.state is undefined or (item.state is defined and item.state and item.state != 'absent')) and
+         (item.groups is defined and item.groups) and
+         (item.hosts is undefined or (item.hosts is defined and item.hosts and inventory_hostname in item.hosts)))
 
 - name: Remove user groups if requested
   group:
@@ -81,6 +90,7 @@
     - users_list
     - users_group_list
     - users_host_list
-  when: ((item.name is defined and item.name != 'root') and
-         (item.state is defined and item.state == 'absent'))
+  when: ((item.name is defined and item.name and item.name != 'root') and
+         (item.state is defined and item.name and item.state == 'absent') and
+         (item.hosts is undefined or (item.hosts is defined and item.hosts and inventory_hostname in item.hosts)))
 

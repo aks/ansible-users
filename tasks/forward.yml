@@ -2,8 +2,8 @@
 
 - name: Configure ~/.forward for users
   template:
-    src: 'home/user/forward.j2'
-    dest: '{{ item.home | default(users_default_home_prefix + "/" + item.name) }}/.forward'
+    src:   'home/user/forward.j2'
+    dest:  '{{ item.home | default(users_default_home_prefix + "/" + item.name) }}/.forward'
     owner: '{{ item.name }}'
     group: '{{ item.group | default(item.name) }}'
     mode: '0644'
@@ -13,9 +13,10 @@
     - users_list
     - users_group_list
     - users_host_list
-  when: ((item.name is defined and item.name != 'root') and
-         (item.state is undefined or (item.state is defined and item.state != 'absent')) and
-         (item.forward is defined and item.forward))
+  when: ((item.name is defined and item.name and item.name != 'root') and
+         (item.state is undefined or (item.state is defined and item.state and item.state != 'absent')) and
+         (item.forward is defined and item.forward) and
+         (item.hosts is undefined or (item.hosts is defined and item.hosts and inventory_hostname in item.hosts)))
 
 - name: Remove ~/.forward from user account when disabled
   file:
@@ -27,7 +28,8 @@
     - users_list
     - users_group_list
     - users_host_list
-  when: ((item.name is defined and item.name != 'root') and
-         (item.state is undefined or (item.state is defined and item.state != 'absent')) and
-         (item.forward is defined and not item.forward))
+  when: ((item.name is defined and item.name and item.name != 'root') and
+         (item.state is undefined or (item.state is defined and item.state and item.state != 'absent')) and
+         (item.forward is defined and not item.forward) and
+         (item.hosts is undefined or (item.hosts is defined and item.hosts and inventory_hostname in item.hosts)))
 

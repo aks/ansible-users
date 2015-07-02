@@ -49,6 +49,9 @@ users_host_list: []
 #    systemuser: False/True         # create system user
 #    systemgroup: False/True        # create system group
 #
+#    # optional: define hosts on which this users should be created
+#    hosts: [ host1, host2, ... ]   # limit this user to these hosts
+#
 #    dotfiles: False/True           # download and configure dotfiles?
 #    dotfiles_repo: 'repository'
 #    dotfiles_command: 'make all'
@@ -59,6 +62,9 @@ users_host_list: []
 #
 #    # Add or disable ssh authorized keys (set to False to remove ~/.ssh/authorized_keys
 #    sshkeys: [ 'list', 'of', 'keys' ]
+#
+#    # define one or more public key files to include into the ~/.ssh/authorized_keys file
+#    ssh_keyfiles: [ file1, file2, ... ]
 #
 #    password: 'krypt pass'         # mkpasswd --method=SHA-512 oder cat /etc/shadow
 #    update_password: 'on_create'   # always will update passwords if they differ.
