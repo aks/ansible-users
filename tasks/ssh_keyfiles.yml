@@ -1,0 +1,31 @@
+---
+# ssh_keyfiles.yml
+#
+# Adds the configured ssh keys from named keyfiles to each user's
+# `~/.ssh/authoried_keys` file.
+#
+# The files from which the keys are are obtained are defined in the users_list
+# using the `ssh_keyfile` attribute, combined with the `users_keyfile_dir`
+# variable to form a complete name.
+#
+# Also uses .hosts attribute to limit which hosts to act on.
+
+- name: user_ssh_keys on unix hosts
+  hosts: unix
+  sudo: yes
+  tags: [ users, ssh, ssh_keyfiles ]
+  tasks:
+  - name: Configure authorized SSH keys for users from ssh keyfiles
+    authorized_key:
+      user: '{{ item.0.name }}'
+      key:  "{{ lookup('file', users_keyfiles_dir + '/' + item.1) }}"
+      state: 'present'
+    with_subelements:
+      - users_list
+      - ssh_keyfiles
+    when: (users_keyfiles_dir is defined and users_keyfiles_dir and
+           item.0.name is defined and item.0.name               and
+           item.0.state is defined and item.0.state != 'absent' and
+           item.1 is defined and item.1                         and
+           (item.0.hosts is undefined or 
+            (item.0.hosts is defined and item.0.hosts and inventory_hostname in item.0.hosts)))
