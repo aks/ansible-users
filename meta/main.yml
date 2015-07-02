@@ -42,8 +42,8 @@ ansigenome_info:
   synopsis: |
     This role can be used to manage user accounts (and user groups). You can
     manage almost all aspects of the users' account, like UID/GID, home
-    directory, shell, etc. Accounts are configured using lists in Ansible
-    inventory, with separate lists for:
+    directory, shell, ssh keys, etc. Accounts are configured using lists in 
+    Ansible inventory, with separate lists for:
 
     * admin accounts;
     * global list of users created on each host in a cluster;
